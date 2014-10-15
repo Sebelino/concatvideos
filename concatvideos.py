@@ -1,6 +1,6 @@
 #!/usr/bin/python3
 
-# Joins all *.MOV files in the specified directory in alphabetical order.
+""" Joins all video files in the specified directory in alphabetical order. """
 
 from subprocess import Popen,PIPE
 import argparse
@@ -8,9 +8,7 @@ import os
 
 filetypes = {'mov','mp4'}
 
-"""
-'~/videos/' |-> ['~/videos/a.mp4','~/videos/b.mp4']
-"""
+""" '/path/to/videos/' |-> ['/path/to/videos/a.mp4','/path/to/videos/b.mp4'] """
 def ls(path):
     files = [os.path.abspath(os.path.join(path,f))
             for f in os.listdir(path)
@@ -61,6 +59,9 @@ def legacyjoin(files,output):
 if __name__ == '__main__':
     parser = argparse.ArgumentParser(description="""
 Concatenate video files of type MOV or MP4.
+""",epilog="""
+Examples:
+./concatvideos.py out.mp4 .
 """)
     parser.add_argument('output',help="Output file. Should be something like 'out.mp4'.")
     parser.add_argument('paths',nargs='+',help="""Paths to each video file. If the path to a
