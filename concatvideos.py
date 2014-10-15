@@ -12,7 +12,9 @@ filetypes = {'mov','mp4'}
 '~/videos/' |-> ['~/videos/a.mp4','~/videos/b.mp4']
 """
 def ls(path):
-    files = [os.path.join(path,f) for f in os.listdir(path) if any([f.endswith(ft) for ft in filetypes])]
+    files = [os.path.abspath(os.path.join(path,f))
+            for f in os.listdir(path)
+            if any([f.endswith(ft) for ft in filetypes])]
     files.sort()
     return files
 
@@ -23,6 +25,23 @@ The commands will be executed in the directory of the first video file, and the 
 specified output file will be relative to it.
 """
 def join(files,output):
+    if not files:
+        return
+    dirpath = os.path.abspath(os.path.dirname(files[0]))
+    lines = ["file '%s'"% f for f in files]
+    inputfile = os.path.join(dirpath,'temp.txt')
+    f = open(inputfile,'w')
+    f.write('\n'.join(lines))
+    f.close()
+    cmd = 'ffmpeg -f concat -i %s -c copy %s'% (inputfile,output)
+    proc = Popen(cmd,shell=True,stdout=PIPE,cwd=dirpath)
+    proc.wait()
+    cmd = 'rm %s'% inputfile
+    proc = Popen(cmd,shell=True,stdout=PIPE,cwd=dirpath)
+    proc.wait()
+
+""" For older versions. """
+def legacyjoin(files,output):
     if not files:
         return
     dirpath = os.path.dirname(files[0])
